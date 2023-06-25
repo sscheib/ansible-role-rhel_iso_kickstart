@@ -89,8 +89,6 @@ Depending on whether certain actions are required, the role needs to install the
 Depending on whether a custom ISO is created (when implanting a kickstart), the package `xorriso` is installed.
 Further, implanting a MD5 checksum into the custom ISO requires the package `isomd5sum`.
 
-```
-
 Example Playbook
 ----------------
 
@@ -147,6 +145,7 @@ Complex example
 ```
 
 Download ISO only
+
 ```
 - hosts: 'localhost'
   gather_facts: false
