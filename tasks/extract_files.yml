@@ -1,0 +1,43 @@
+---
+- name: 'Ensure mount point is not already occupied by a mount'
+  ansible.posix.mount:
+    path: '{{ _temporary_mount_path }}'
+    state: 'unmounted'
+  become: true
+
+- name: 'Mount downloaded ISO to extract contents'
+  ansible.posix.mount:
+    path: '{{ _temporary_mount_path }}'
+    src: '{{ __iso_path }}'
+    state: 'ephemeral'
+    fstype: 'iso9660'
+    opts: 'ro,loop'
+    boot: false
+  become: true
+
+- name: 'Set fact: Absolute path to the source files for the ISO'
+  ansible.builtin.set_fact:
+    __src_files_path: '{{ _temporary_work_dir_path }}/{{ _temporary_work_dir_source_files_path }}'
+
+- name: 'Ensure sources files directory is present: {{ __src_files_path }}'
+  ansible.builtin.file:
+    path: '{{ __src_files_path }}'
+    state: 'directory'
+    owner: '{{ _temporary_work_dir_source_files_path_owner }}'
+    group: '{{ _temporary_work_dir_source_files_path_group }}'
+    mode: '{{ _temporary_work_dir_source_files_path_mode }}'
+  become: true
+
+- name: 'Extract files of mounted ISO to work directory: {{ __src_files_path }}'
+  ansible.builtin.synchronize:
+    src: '{{ _temporary_mount_path }}/'
+    dest: '{{ __src_files_path }}'
+    archive: true
+  become: true
+  delegate_to: 'localhost'
+
+- name: 'Unmount temporarily mounted ISO'
+  ansible.posix.mount:
+    path: '{{ _temporary_mount_path }}'
+    state: 'unmounted'
+  become: true

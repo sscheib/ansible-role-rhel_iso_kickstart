@@ -1,0 +1,116 @@
+---
+# NOTE: _quiet_assert does not impact this task, as it first needs to be ensured that it actually is
+#       properly defined
+- name: 'Ensure mandatory variables, as  well as variables, which have a default value, are set (boolean)'
+  ansible.builtin.assert:
+    that:
+      - lookup('ansible.builtin.vars', item) is defined
+      - lookup('ansible.builtin.vars', item) | bool | string == lookup('ansible.builtin.vars', item) | string
+      - lookup('ansible.builtin.vars', item) is boolean
+      - lookup('ansible.builtin.vars', item) | type_debug == 'bool'
+    success_msg: "Variable '{{ item }}' defined properly - value: '{{ lookup('ansible.builtin.vars', item) }}'"
+    fail_msg: "Variable '{{ item }}' failed to validate"
+    quiet: '{{ _quiet_assert }}'
+  loop:
+    - '_validate_kickstart'
+    - '_quiet_assert'
+    - '_cleanup_iso'
+    - '_cleanup_work_dir'
+    - '_force_recreate_custom_iso'
+    - '_implant_md5'
+  loop_control:
+    label: 'variable: {{ item }}'
+
+- name: 'Ensure mandatory variables, as well as variables, which have a default value, are set (string)'
+  ansible.builtin.assert:
+    that:
+      - lookup('ansible.builtin.vars', item) is defined
+      - lookup('ansible.builtin.vars', item) is string
+      - lookup('ansible.builtin.vars', item) != None
+      - lookup('ansible.builtin.vars', item) != ''
+    success_msg: "Variable '{{ item }}' defined properly - value: '{{ lookup('ansible.builtin.vars', item) }}'"
+    fail_msg: "Variable '{{ item }}' failed to validate"
+    quiet: '{{ _quiet_assert }}'
+  loop:
+    - '_download_directory'
+    - '_download_directory_owner'
+    - '_download_directory_group'
+    - '_download_directory_mode'
+    - '_ksvalidator_package_name'
+    - '_temporary_mount_path'
+    - '_temporary_work_dir_path'
+    - '_temporary_work_dir_path_owner'
+    - '_temporary_work_dir_path_group'
+    - '_temporary_work_dir_path_mode'
+    - '_temporary_work_dir_source_files_path'
+    - '_temporary_work_dir_source_files_path_owner'
+    - '_temporary_work_dir_source_files_path_group'
+    - '_temporary_work_dir_source_files_path_mode'
+    - '_dest_dir_path'
+    - '_xorriso_package_name'
+    - '_isolinux_bin_path'
+    - '_boot_cat_path'
+    - '_pxelinux_cfg_path'
+    - '_iso_owner'
+    - '_iso_group'
+    - '_iso_mode'
+    - '_custom_iso_owner'
+    - '_custom_iso_group'
+    - '_custom_iso_mode'
+    - '_implantisomd5_package_name'
+    - '_checksum'
+    - '_grub_cfg_path'
+  loop_control:
+    label: 'variable: {{ item }}'
+
+- name: 'Ensure mandatory variables, as well as variables, which have a default value, are set (integer)'
+  ansible.builtin.assert:
+    that:
+      - lookup('ansible.builtin.vars', item) is defined
+      - lookup('ansible.builtin.vars', item) | int | string == lookup('ansible.builtin.vars', item) | string
+      - lookup('ansible.builtin.vars', item) | int is number
+      - lookup('ansible.builtin.vars', item) | int is integer
+      - lookup('ansible.builtin.vars', item) | int >= 0
+    success_msg: "Variable '{{ item }}' defined properly - value: '{{ lookup('ansible.builtin.vars', item) }}'"
+    fail_msg: "Variable '{{ item }}' failed to validate"
+    quiet: '{{ _quiet_assert }}'
+  loop:
+    - '_download_timeout'
+    - '_grub_menu_selection_timeout'
+  loop_control:
+    label: 'variable: {{ item }}'
+
+- name: 'Ensure kickstart path is set when defined'
+  ansible.builtin.assert:
+    that:
+      - _kickstart_path is string
+      - _kickstart_path != ''
+      - _kickstart_path != None
+    success_msg: "Variable '_kickstart_path' defined properly - value: '{{ _kickstart_path }}'"
+    fail_msg: "Variable '_kickstart_path' failed to validate"
+    quiet: '{{ _quiet_assert }}'
+  when: _kickstart_path is defined
+
+- name: 'Ensure kickstart root password is set when defined'
+  ansible.builtin.assert:
+    that:
+      - _kickstart_root_password is string
+      - _kickstart_root_password != ''
+      - _kickstart_root_password != None
+    success_msg: "Variable '_kickstart_root_password' defined properly"
+    fail_msg: "Variable '_kickstart_root_password' failed to validate"
+    quiet: '{{ _quiet_assert }}'
+  no_log: true
+  when: _kickstart_root_password is defined
+
+- name: 'Ensure api_token is defined properly (string)'
+  ansible.builtin.assert:
+    that:
+      - _api_token is defined
+      - _api_token is string
+      - _api_token != None
+      - _api_token != ''
+    success_msg: "Variable '_api_token' defined properly"
+    fail_msg: "Variable '_api_token' failed to validate"
+    quiet: '{{ _quiet_assert }}'
+  no_log: true

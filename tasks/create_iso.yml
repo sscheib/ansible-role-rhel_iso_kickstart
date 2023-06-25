@@ -1,0 +1,84 @@
+---
+- name: 'Ensure xorriso is present'
+  ansible.builtin.package:
+    name: '{{ _xorriso_package_name }}'
+    state: 'present'
+  become: true
+
+- name: 'Set fact: Destination ISO path'
+  ansible.builtin.set_fact:
+    __dest_iso_path: "{{ _dest_dir_path ~ '/' ~ __iso_filename | splitext | first ~ '-ks.iso' }}"
+
+- name: 'Remove ISO if forced to recreate the ISO is asked for: {{ __dest_iso_path }}'
+  ansible.builtin.file:
+    path: '{{ __dest_iso_path }}'
+    state: 'absent'
+  become: true
+  when: >
+    _force_recreate_custom_iso is defined
+    and _force_recreate_custom_iso
+
+- name: 'Retrieve the label of {{ __iso_path }}'
+  ansible.builtin.command:
+    cmd: 'blkid --match-tag=LABEL -o value {{ __iso_path }}'
+  changed_when: false
+  become: true
+  register: '__t_label'
+
+- name: 'Set fact: label of {{ __iso_path }}'
+  ansible.builtin.set_fact:
+    __iso_label: '{{ __t_label.stdout }}'
+
+- name: 'Create the ISO with the included kickstart at: {{ __dest_iso_path }}'
+  ansible.builtin.command:
+    argv:
+      - 'mkisofs'
+      - '-o'
+      - '{{ __dest_iso_path }}'
+      - '-b'
+      - '{{ _isolinux_bin_path }}'
+      - '-c'
+      - '{{ _boot_cat_path }}'
+      - '-J'
+      - '-R'
+      - '-l'
+      - '-v'
+      - '-no-emul-boot'
+      - '-boot-load-size'
+      - '4'
+      - '-boot-info-table'
+      - '-eltorito-alt-boot'
+      - '-graft-points'
+      - '-joliet-long'
+      - '-V'
+      - '{{ __iso_label }}'
+      - '-volid'
+      - '{{ __iso_label }}'
+      - '{{ __src_files_path }}'
+    creates: '{{ __dest_iso_path }}'
+  become: true
+
+- name: 'Block: Handle implanting of MD5 into ISO'
+  become: true
+  when: >
+    _implant_md5 is defined
+    and _implant_md5
+  block:
+
+    - name: 'Ensure implantisomd5 is present'
+      ansible.builtin.package:
+        name: '{{ _implantisomd5_package_name }}'
+        state: 'present'
+
+    - name: 'Implant MD5 checksum into the ISO'
+      ansible.builtin.command:
+        cmd: 'implantisomd5 {{ __dest_iso_path }}'
+      changed_when: true
+
+- name: 'Ensure created ISO has the proper permissions'
+  ansible.builtin.file:
+    path: '{{ __dest_iso_path }}'
+    owner: '{{ _custom_iso_owner }}'
+    group: '{{ _custom_iso_group }}'
+    mode: '{{ _custom_iso_mode }}'
+  become: true

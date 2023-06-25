@@ -1,0 +1,108 @@
+---
+#
+# mandatory variables
+#
+
+# checksum of the ISO to download
+_checksum: '{{ checksum | mandatory }}'
+
+# API token to use to authenticate against the Red Hat Customer Portal
+_api_token: '{{ api_token | mandatory }}'
+
+#
+# optional variables
+#
+
+# URL to the Red Hat Portal Customer to authenticate against
+_redhat_portal_auth_url: '{{ redhat_portal_auth_url | default(_def_redhat_portal_auth_url) }}'
+
+# base URL for image downloading from the Red Hat Customer Portal
+_redhat_portal_download_base_url: '{{ redhat_portal_download_base_url | default(_def_redhat_portal_download_base_url) }}'
+
+# directory to store the downloaded ISO in
+_download_directory: '{{ download_directory | default(_def_download_directory) }}'
+_download_directory_owner: '{{ download_directory_owner | default(_def_download_directory_owner) }}'
+_download_directory_group: '{{ download_directory_group | default(_def_download_directory_group) }}'
+_download_directory_mode: '{{ download_directory_mode | default(_def_download_directory_mode) }}'
+
+# timeout for the download (in seconds)
+_download_timeout: '{{ download_timeout | default(_def_download_timeout) }}'
+
+# whether to validate the provided kickstart (if provided)
+_validate_kickstart: '{{ validate_kickstart | default(_def_validate_kickstart) }}'
+
+# name of the package that provides ksvalidator
+_ksvalidator_package_name: '{{ ksvalidator_package_name | default(_def_ksvalidator_package_name) }}'
+
+# path to a temporary (empty) mount point to mount the downloaded ISO to
+_temporary_mount_path: '{{ temporary_mount_path | default(_def_temporary_mount_path) }}'
+
+# temporary directory which will be used to extract the ISO files and modify certain files
+_temporary_work_dir_path: '{{ temporary_work_dir_path | default(_def_temporary_work_dir_path) }}'
+_temporary_work_dir_path_owner: '{{ temporary_work_dir_path_owner | default(_def_temporary_work_dir_path_owner) }}'
+_temporary_work_dir_path_group: '{{ temporary_work_dir_path_group | default(_def_temporary_work_dir_path_group) }}'
+_temporary_work_dir_path_mode: '{{ temporary_work_dir_path_mode | default(_def_temporary_work_dir_path_mode) }}'
+
+# relative path to a directory within the temporary_work_dir_path that will
+# contain the files that will be added to the custom ISO
+_temporary_work_dir_source_files_path: '{{ temporary_work_dir_source_files_path | default(_def_temporary_work_dir_source_files_path) }}'
+_temporary_work_dir_source_files_path_owner: '{{ temporary_work_dir_source_files_path_owner | default(_def_temporary_work_dir_source_files_path_owner) }}'
+_temporary_work_dir_source_files_path_group: '{{ temporary_work_dir_source_files_path_group | default(_def_temporary_work_dir_source_files_path_group) }}'
+_temporary_work_dir_source_files_path_mode: '{{ temporary_work_dir_source_files_path_mode | default(_def_temporary_work_dir_source_files_path_mode) }}'
+
+# destination directory for the custom ISO
+_dest_dir_path: '{{ dest_dir_path | default(_def_dest_dir_path) }}'
+
+# name of the package that provides xorriso
+_xorriso_package_name: '{{ xorriso_package_name | default(_def_xorriso_package_name) }}'
+
+# relative path within the temporary_work_dir_source_files_path to the isolinux.bin file
+_isolinux_bin_path: '{{ isolinux_bin_path | default(_def_isolinux_bin_path) }}'
+
+# relative path within the temporary_work_dir_source_files_path to the boot.cat file
+_boot_cat_path: '{{ boot_cat_path | default(_def_boot_cat_path) }}'
+
+# relative path within the temporary_work_dir_source_files_path to the isolinux.cfg file
+_pxelinux_cfg_path: '{{ pxelinux_cfg_path | default(_def_pxelinux_cfg_path) }}'
+
+# whether to clean up the downloaded ISO
+_cleanup_iso: '{{ cleanup_iso | default(_def_cleanup_iso) }}'
+
+# whether to clean up the work directory defined in temporary_work_dir_path
+_cleanup_work_dir: '{{ cleanup_work_dir | default(_def_cleanup_work_dir) }}'
+
+# owner, group and permissions of the downloaded ISO
+_iso_owner: '{{ iso_owner | default(_def_iso_owner) }}'
+_iso_group: '{{ iso_group | default(_def_iso_group) }}'
+_iso_mode: '{{ iso_mode | default(_def_iso_mode) }}'
+
+# owner, group and permissions of the custom ISO
+_custom_iso_owner: '{{ custom_iso_owner | default(_def_custom_iso_owner) }}'
+_custom_iso_group: '{{ custom_iso_group | default(_def_custom_iso_group) }}'
+_custom_iso_mode: '{{ custom_iso_mode | default(_def_custom_iso_mode) }}'
+
+# whether to delete the custom ISO before recreating it. Once the custom ISO file exists, it won't be
+# recreated, even if there are changes. That's because creating the ISO makes use of the command module
+# and thus the operation is not idempotent, nor can be checked whether the ISO should be recreated due to changes
+_force_recreate_custom_iso: '{{ force_recreate_custom_iso | default(_def_force_recreate_custom_iso) }}'
+
+# relative path within the temporary_work_dir_source_files_path to the grub.conf file
+_grub_cfg_path: '{{ grub_cfg_path | default(_def_grub_cfg_path) }}'
+
+# defines how long to wait in the GRUB menu before using the default boot option
+_grub_menu_selection_timeout: '{{ grub_menu_selection_timeout | default(_def_grub_menu_selection_timeout) }}'
+
+# whether to implant an MD5 into the custom ISO that can be checked
+_implant_md5: '{{ implant_md5 | default(_def_implant_md5) }}'
+
+# package name that provides the implantisomd5 command
+_implantisomd5_package_name: '{{ implantisomd5_package_name | default(_def_implantisomd5_package_name) }}'
+
+# whether to quiet asserts
+_quiet_assert: '{{ quiet_assert | default(_def_quiet_assert) }}'
+
+# root password to set to in the provided kickstart
+_kickstart_root_password: '{{ kickstart_root_password | default(undef()) }}'
+
+# path to the kickstart file to put into the ISO
+_kickstart_path: '{{ kickstart_path | default(undef()) }}'

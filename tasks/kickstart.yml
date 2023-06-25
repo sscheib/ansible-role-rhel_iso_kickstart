@@ -1,0 +1,113 @@
+---
+- name: 'Ensure work directory is present: {{ _temporary_work_dir_path }}'
+  ansible.builtin.file:
+    path: '{{ _temporary_work_dir_path }}'
+    state: 'directory'
+    owner: '{{ _temporary_work_dir_path_owner }}'
+    group: '{{ _temporary_work_dir_path_group }}'
+    mode: '{{ _temporary_work_dir_path_mode }}'
+  become: true
+
+- name: 'Set fact: Path to the kickstart in the work directory'
+  ansible.builtin.set_fact:
+    __work_dir_kickstart_path: "{{ __src_files_path ~ '/ks.cfg' }}"
+
+- name: 'Place provided kickstart into the work directory'
+  ansible.builtin.copy:
+    src: '{{ _kickstart_path }}'
+    dest: '{{ __work_dir_kickstart_path }}'
+    owner: '{{ _temporary_work_dir_path_owner }}'
+    group: '{{ _temporary_work_dir_path_group }}'
+    mode: '{{ _temporary_work_dir_path_mode }}'
+  become: true
+
+- name: 'Insert root password into the provided kickstart'
+  ansible.builtin.lineinfile:
+    path: '{{ __work_dir_kickstart_path }}'
+    regex: '^rootpw.*$'
+    line: "rootpw --iscrypted {{ _kickstart_root_password | string | ansible.builtin.password_hash(hashtype='sha512') }}"
+  become: true
+
+- name: 'Handle validation of kickstart'
+  when: >
+    _validate_kickstart is defined
+    and _validate_kickstart
+  block:
+
+    - name: 'Ensure ksvalidator is installed'
+      ansible.builtin.package:
+        name: '{{ _ksvalidator_package_name }}'
+        state: 'present'
+      become: true
+
+    - name: 'Handle failed validation'
+      block:
+
+        - name: 'Validate kickstart'
+          ansible.builtin.command:
+            cmd: 'ksvalidator {{ __work_dir_kickstart_path }}'
+          register: '__t_ks_validate'
+          changed_when: false
+          failed_when: __t_ks_validate.rc != 0
+
+      rescue:
+        - name: 'Show command output when the kickstart validation failed'
+          ansible.builtin.debug:
+            msg: '{{ __t_ks_validate.stderr }}'
+
+        - name: 'Kickstart validation failed'
+          ansible.builtin.fail:
+            msg: 'Kickstart validation failed'
+
+- name: >
+    Handle implementing of kickstart and changing the default menu entry when
+    implanting an MD5 sum is not asked for
+  become: true
+  when: >
+    _implant_md5 is not defined
+    or not _implant_md5
+  block:
+
+    - name: 'Update kernel parameters to include the kickstart file (MD5 implanting not requested)'
+      ansible.builtin.lineinfile:
+        path: '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'
+        regexp: '^(.+)(hd:LABEL[A-z0-9_=-]+)(\sinst\.ks=\2:/ks\.cfg)?(\squiet)$'
+        line: '\1\2 inst.ks=\2:/ks.cfg\4'
+        backrefs: true
+
+    - name: 'Remove default menu entry to test the media'
+      ansible.builtin.replace:
+        path: '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'
+        after: '\s+Test this'
+        regexp: '^\s+menu\sdefault\n'
+        replace: ''
+
+    - name: 'Add default menu entry to install the media'
+      ansible.builtin.lineinfile:
+        path: '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'
+        insertafter: '\s+menu\slabel\s\^Install'
+        line: '  menu default'
+
+    - name: 'Set the default to menu entry 0'
+      ansible.builtin.lineinfile:
+        path: '{{ __src_files_path }}/{{ _grub_cfg_path }}'
+        regexp: '^default=\d'
+        line: 'default=0'
+
+- name: 'Update kernel parameters to include the kickstart file (MD5 implanting requested)'
+  ansible.builtin.lineinfile:
+    path: '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'
+    regexp: '^(.+)(hd:LABEL[A-z0-9_=-]+)(\sinst\.ks=\2:/ks\.cfg)?(\srd.live.check\squiet)$'
+    line: '\1\2 inst.ks=\2:/ks.cfg\4'
+    backrefs: true
+  become: true
+  when: >
+    _implant_md5 is defined
+    and _implant_md5
+
+- name: 'Set the timeout for the selection within GRUB to {{ _grub_menu_selection_timeout }}'
+  ansible.builtin.lineinfile:
+    path: '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'
+    regexp: '^timeout\s\d+'
+    line: 'timeout {{ _grub_menu_selection_timeout | int * 10 }}'  # we need the time in milliseconds
+  become: true

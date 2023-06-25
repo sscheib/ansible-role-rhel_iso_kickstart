@@ -1,0 +1,88 @@
+---
+# URL to the Red Hat Customer Portal to authenticate against
+_def_redhat_portal_auth_url: 'https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token'
+
+# base URL for image downloading from the Red Hat Customer Portal
+_def_redhat_portal_download_base_url: 'https://api.access.redhat.com/management/v1/images'
+
+# directory to store the downloaded ISO in
+_def_download_directory: '{{ playbook_dir }}'
+_def_download_directory_owner: 'root'
+_def_download_directory_group: 'root'
+_def_download_directory_mode: '0755'
+
+# timeout for the download (in seconds)
+_def_download_timeout: '3600'
+
+# whether to validate the provided kickstart (if provided)
+_def_validate_kickstart: true
+
+# name of the package that provides ksvalidator
+_def_ksvalidator_package_name: 'pykickstart'
+
+# path to a temporary (empty) mount point to mount the downloaded ISO to
+_def_temporary_mount_path: '/mnt'
+
+# temporary directory which will be used to extract the ISO files and modify certain files
+_def_temporary_work_dir_path: '{{ playbook_dir }}/workdir'
+_def_temporary_work_dir_path_owner: 'root'
+_def_temporary_work_dir_path_group: 'root'
+_def_temporary_work_dir_path_mode: '0755'
+
+# relative path to a directory within the temporary_work_dir_path that will
+# contain the files that will be added to the custom ISO
+_def_temporary_work_dir_source_files_path: 'src'
+_def_temporary_work_dir_source_files_path_owner: 'root'
+_def_temporary_work_dir_source_files_path_group: 'root'
+_def_temporary_work_dir_source_files_path_mode: '0755'
+
+# destination directory for the custom ISO
+_def_dest_dir_path: '{{ playbook_dir }}'
+
+# name of the package that provides xorriso
+_def_xorriso_package_name: 'xorriso'
+
+# relative path within the temporary_work_dir_source_files_path to the isolinux.bin file
+_def_isolinux_bin_path: 'isolinux/isolinux.bin'
+
+# relative path within the temporary_work_dir_source_files_path to the boot.cat file
+_def_boot_cat_path: 'isolinux/boot.cat'
+
+# relative path within the temporary_work_dir_source_files_path to the isolinux.cfg file
+_def_pxelinux_cfg_path: 'isolinux/isolinux.cfg'
+
+# relative path within the temporary_work_dir_source_files_path to the grub.conf file
+_def_grub_cfg_path: 'isolinux/grub.conf'
+
+# whether to clean up the downloaded ISO
+_def_cleanup_iso: false
+
+# whether to clean up the work directory defined in temporary_work_dir_path
+_def_cleanup_work_dir: false
+
+# owner, group and permissions of the downloaded ISO
+_def_iso_owner: 'root'
+_def_iso_group: 'root'
+_def_iso_mode: '0600'
+
+# owner, group and permissions of the custom ISO
+_def_custom_iso_owner: 'root'
+_def_custom_iso_group: 'root'
+_def_custom_iso_mode: '0600'
+
+# whether to delete the custom ISO before recreating it. Once the custom ISO file exists, it won't be
+# recreated, even if there are changes. That's because creating the ISO makes use of the command module
+# and thus the operation is not idempotent, nor can be checked whether the ISO should be recreated due to changes
+_def_force_recreate_custom_iso: true
+
+# defines how long to wait in the GRUB menu before using the default boot option
+_def_grub_menu_selection_timeout: 5
+
+# whether to implant an MD5 into the custom ISO that can be checked
+_def_implant_md5: true
+
+# package name that provides the implantisomd5 command
+_def_implantisomd5_package_name: 'isomd5sum'
+
+# whether to quiet asserts
+_def_quiet_assert: true

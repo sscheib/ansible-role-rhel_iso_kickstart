@@ -1,0 +1,41 @@
+---
+- name: 'Include tasks to ensure that all required variables are set'
+  ansible.builtin.include_tasks:
+    file: 'assert.yml'
+
+- name: 'Include tasks to authenticate against the Red Hat Portal'
+  ansible.builtin.include_tasks:
+    file: 'authenticate.yml'
+
+- name: 'Include tasks to download the ISO from the Red Hat Portal'
+  ansible.builtin.include_tasks:
+    file: 'download_iso.yml'
+
+- name: 'Handle including tasks when kickstart file is given'
+  when: >
+    _kickstart_path is defined
+    and _kickstart_path != ''
+    and _kickstart_path != None
+  block:
+
+    - name: 'Include tasks to mount the downloaded ISO and extract its contents'
+      ansible.builtin.include_tasks:
+        file: 'extract_files.yml'
+
+    - name: 'Include tasks to update process the provided kickstart file'
+      ansible.builtin.include_tasks:
+        file: 'kickstart.yml'
+
+    - name: 'Include tasks to create the ISO with the kickstart included'
+      ansible.builtin.include_tasks:
+        file: 'create_iso.yml'
+
+- name: 'Include tasks to cleanup'
+  ansible.builtin.include_tasks:
+    file: 'cleanup.yml'
+  when: >
+    (_cleanup_iso is defined
+    and _cleanup_iso)
+    or
+    (_cleanup_work_dir is defined
+    and _cleanup_work_dir)
