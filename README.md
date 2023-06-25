@@ -1,7 +1,7 @@
 rhel_iso_kickstart
 =========
 
-This role downloads any RHEL ISO from the [Red Hat Customer Portal](https://access.redhat.com) (or really any ISO) and optionally implants a Kickstart file into a custom ISO#
+This role downloads any RHEL ISO from the [Red Hat Customer Portal](https://access.redhat.com) (or really any ISO) and optionally implants a Kickstart file into a custom ISO
 which is build from the downloaded ISO.
 The role requires a `checksum` to be set; This checksum can be retrieved for any ISO on the Red Hat Customer Portal and can be found on the respective download page of the ISO.
 To download an ISO from the Red Hat Customer Portal you need to be Red Hat subscriber. If you don't own any subscriptions, you can make use of 
