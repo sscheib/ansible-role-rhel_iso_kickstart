@@ -3,19 +3,22 @@ rhel_iso_kickstart
 
 This role downloads any RHEL ISO from the [Red Hat Customer Portal](https://access.redhat.com) (or really any ISO) and optionally implants a Kickstart file into a custom ISO
 which is build from the downloaded ISO.
-The role requires a `checksum` to be set; This checksum can be retrieved for any ISO on the Red Hat Customer Portal and can be found on the respective download page of the ISO.
-To download an ISO from the Red Hat Customer Portal you need to be Red Hat subscriber. If you don't own any subscriptions, you can make use of 
-[Red Hat's Developer Subscription](https://developers.redhat.com/articles/faqs-no-cost-red-hat-enterprise-linux) which is provided at no cost.
+
+The role requires a `checksum` to be set. This checksum can be retrieved for any ISO on the Red Hat Customer Portal and can be found on the respective download page of the ISO.
+To download an ISO from the Red Hat Customer Portal you need to be a Red Hat subscriber. If you don't own any subscriptions, you can make use of 
+[Red Hat's Developer Subscription](https://developers.redhat.com/articles/faqs-no-cost-red-hat-enterprise-linux) which is provided at no cost by Red Hat.
 
 Once you are able to download from the Red Hat Customer Portal, you need to create a [Red Hat API Token](https://access.redhat.com/management/api) and pass it to this role via
 `api_token`.
 This role is loosely based on the instructions provided by Red Hat which explain how to download ISO images via `curl` from Red Hat's Customer Portal.
 These instructions can be reviewed
-[https://access.redhat.com/documentation/de-de/red_hat_enterprise_linux/8/html/performing_a_standard_rhel_8_installation/downloading-beta-installation-images_installing-rhel](here)
+[here](https://access.redhat.com/documentation/de-de/red_hat_enterprise_linux/8/html/performing_a_standard_rhel_8_installation/downloading-beta-installation-images_installing-rhel)
 
-Please note, despite the metadata at `meta/main.yml` specifying `EL` (Enterprise Linux) this role specifically works **only** for RHEL ISOs. It can probably modified to work also
+Please note, despite the metadata at `meta/main.yml` specifying `EL` (Enterprise Linux) this role specifically works **only** for RHEL ISOs. It can probably be modified to work also
 with Alma Linux or Rocky Linux, but that's a task somebody else needs to take care of, as I don't use either of those RHEL clones. The process of creating the custom ISO, however,
-*should* remain the same (untested). Unfortunately, specifying `RHEL` is not possible, as it is not a possible operating system to use.
+*should* remain the same (untested). 
+
+Unfortunately, specifying `RHEL` as the operating system in `meta/main.yml` is not possible, as there is no distinction made between the RHEL clones and RHEL itself.
 
 I have probably not tested every combination possible with the variables. If you find an issue, feel free to raise it or provide a pull request to fix it.
 
@@ -72,11 +75,11 @@ Role Variables
 
 A note on `force_recreate_custom_iso`:
 This variable defines whether to delete the custom ISO before recreating it. Once the custom ISO file exists, it won't be recreated, even if there are changes. 
-That's because creating the ISO makes use of the command module and thus the operation is not idempotent, nor can be checked whether the ISO should be recreated due to changes.
+That's because creating the ISO makes use of the command module and thus the operation is not idempotent, nor can it be checked whether the ISO should be recreated due to changes.
 
 Depending on the value of `implant_md5`, different menu entries are selected when booting from the ISO:
 * When `implant_md5` is set to `false` the ISO will be booted without checking the MD5 (which would fail)
-* When `implant_md5` is set to `true` the ISO will be booted with `rd.live.check` which will calculate the MD5 checksum of the ISO and compares it against the implanted one
+* When `implant_md5` is set to `true` the ISO will be booted with `rd.live.check` which will calculate the MD5 checksum of the ISO and compare it against the implanted one
 
 Dependencies
 ------------
