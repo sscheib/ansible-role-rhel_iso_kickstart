@@ -1,0 +1,34 @@
+%post --interpreter=/bin/bash --log=/tmp/post_authorized_keys.log --erroronfail
+logger "Starting anaconda postinstall to add authorized keys to users"
+
+{% if _users is defined and _users | length > 0 %}
+{%   for _user in _users %}
+logger "Creating user {{ _user.name }}"
+{%     if _user.home is defined and _user.authorized_keys is defined and _user.authorized_keys | length > 0 %}
+
+# Create SSH directory with appropriate permissions
+mkdir -p {{ _user.home }}/.ssh
+chmod 0700 {{ _user.home }}/.ssh
+chown {{ _user.name}}: {{ _user.home }}/.ssh
+
+# Add authorized keys
+{%       for _key in _user.authorized_keys %}
+echo "{{ _key }}" >> {{ _user.home }}/.ssh/authorized_keys
+{%       endfor %}
+
+# Ensure correct permissions and owner on the authorized_keys file
+chown {{ _user.name}}: {{ _user.home }}/.ssh/authorized_keys
+chmod 0600 {{ _user.home }}/.ssh/authorized_keys
+
+# Restore SELinux context
+restorecon -R {{ _user.home }}/.ssh
+{%     endif %}{# if _user.home is defined #}
+{%     if _user.privileged is defined and _user.privileged %}
+# Allow sudo commands without password
+cat <<- EOF >> {{ _user.sudoers_file | default('/etc/sudoers.d/' ~ _user.name | replace('-', '_')) }}
+{{ _user.name }}    ALL=(ALL) NOPASSWD:    ALL
+EOF
+{%     endif %}{# if _user.privileged is defined and _user.privileged #}
+{%   endfor %}{# for _user in _users #}
+{% endif %}{# if _users is defined and _users | length > 0 #}
+%end

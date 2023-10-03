@@ -26,7 +26,47 @@
     path: '{{ __work_dir_kickstart_path }}'
     regex: '^rootpw.*$'
     line: "rootpw --iscrypted {{ _kickstart_root_password | string | ansible.builtin.password_hash(hashtype='sha512') }}"
+  no_log: true
   become: true
+
+- name: 'Insert group creations into the provided kickstart'
+  ansible.builtin.lineinfile:
+    path: '{{ __work_dir_kickstart_path }}'
+    regex: '^group\s--name={{ _group.name }}.*$'
+    line: >-
+      {{
+        'group --name=' ~ _group.name ~
+        ' --gid=' ~ _group.gid if _group.gid is defined else ''
+      }}
+  become: true
+  no_log: true
+  when: >
+    _group.create_user_group is defined
+    and _group.create_user_group
+  loop: '{{ _users }}'
+  loop_control:
+    loop_var: '_group'
+
+- name: 'Include tasks to insert user statements into the provided kickstart'
+  ansible.builtin.include_tasks:
+    file: 'build_user_statement.yml'
+  vars:
+    _user: '{{ _usr }}'
+  no_log: true
+  loop: '{{ _users }}'
+  loop_control:
+    loop_var: '_usr'
+
+- name: 'Insert post sections'
+  ansible.builtin.blockinfile:
+    path: '{{ __work_dir_kickstart_path }}'
+    block: "{{ lookup('template', _post.template) }}"
+    marker_begin: "{{ 'BEGIN: ' ~ _post.name }}"
+    marker_end: "{{ 'END: ' ~ _post.name }}"
+  become: true
+  loop: '{{ _post_sections }}'
+  loop_control:
+    loop_var: '_post'
 
 - name: 'Handle validation of kickstart'
   when: >
@@ -68,46 +108,70 @@
     or not _implant_md5
   block:
 
-    - name: 'Update kernel parameters to include the kickstart file (MD5 implanting not requested)'
-      ansible.builtin.lineinfile:
-        path: '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'
-        regexp: '^(.+)(hd:LABEL[A-z0-9_=-]+)(\sinst\.ks=\2:/ks\.cfg)?(\squiet)$'
-        line: '\1\2 inst.ks=\2:/ks.cfg\4'
-        backrefs: true
-
-    - name: 'Remove default menu entry to test the media'
+    - name: 'BIOS: Remove default menu entry to test the media'
       ansible.builtin.replace:
         path: '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'
         after: '\s+Test this'
         regexp: '^\s+menu\sdefault\n'
         replace: ''
 
-    - name: 'Add default menu entry to install the media'
+    - name: 'BIOS: Add default menu entry to install the media'
       ansible.builtin.lineinfile:
         path: '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'
         insertafter: '\s+menu\slabel\s\^Install'
         line: '  menu default'
 
-    - name: 'Set the default to menu entry 0'
+    - name: 'BIOS/UEFI: Set the default to menu entry 0'
       ansible.builtin.lineinfile:
-        path: '{{ __src_files_path }}/{{ _grub_cfg_path }}'
+        path: '{{ _cfg_path }}'
         regexp: '^default=\d'
         line: 'default=0'
+      loop:
+        - '{{ __src_files_path }}/{{ _grub_cfg_path }}'  # BIOS
+        - '{{ __src_files_path }}/{{ _grub_cfg_path_uefi }}'  # UEFI
+      loop_control:
+        loop_var: '_cfg_path'
 
 - name: 'Update kernel parameters to include the kickstart file (MD5 implanting requested)'
   ansible.builtin.lineinfile:
-    path: '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'
+    path: '{{ _cfg_path }}'
     regexp: '^(.+)(hd:LABEL[A-z0-9_=-]+)(\sinst\.ks=\2:/ks\.cfg)?(\srd.live.check\squiet)$'
     line: '\1\2 inst.ks=\2:/ks.cfg\4'
     backrefs: true
   become: true
+  loop:
+    - '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'  # BIOS
+    - '{{ __src_files_path }}/{{ _grub_cfg_path_uefi }}'  # UEFI
+  loop_control:
+    loop_var: '_cfg_path'
   when: >
     _implant_md5 is defined
     and _implant_md5
 
-- name: 'Set the timeout for the selection within GRUB to {{ _grub_menu_selection_timeout }}'
+- name: 'BIOS/UEFI: Update kernel parameters to include the kickstart file'
+  ansible.builtin.lineinfile:
+    path: '{{ _cfg_path }}'
+    regexp: '^(.+)(hd:LABEL[A-z0-9_=-]+)(\sinst\.ks=\2:/ks\.cfg)?(\squiet)$'
+    line: '\1\2 inst.ks=\2:/ks.cfg\4'
+    backrefs: true
+  become: true
+  loop:
+    - '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'  # BIOS
+    - '{{ __src_files_path }}/{{ _grub_cfg_path_uefi }}'  # UEFI
+  loop_control:
+    loop_var: '_cfg_path'
+
+
+- name: 'BIOS: Set the timeout for the selection within GRUB to {{ _grub_menu_selection_timeout }}'
   ansible.builtin.lineinfile:
     path: '{{ __src_files_path }}/{{ _pxelinux_cfg_path }}'
     regexp: '^timeout\s\d+'
     line: 'timeout {{ _grub_menu_selection_timeout | int * 10 }}'  # we need the time in milliseconds
+  become: true
+
+- name: 'UEFI: Set the timeout for the selection within GRUB to {{ _grub_menu_selection_timeout }}'
+  ansible.builtin.lineinfile:
+    path: '{{ __src_files_path }}/{{ _grub_cfg_path_uefi }}'
+    regexp: '^set\stimeout=\d+'
+    line: 'set timeout={{ _grub_menu_selection_timeout }}'
   become: true

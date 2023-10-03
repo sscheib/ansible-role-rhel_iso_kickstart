@@ -66,3 +66,4 @@
     mode: '{{ _iso_mode }}'
     checksum: 'sha256:{{ _checksum }}'
     timeout: '{{ _download_timeout }}'
+  become: true

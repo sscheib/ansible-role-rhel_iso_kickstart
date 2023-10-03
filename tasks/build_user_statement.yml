@@ -1,0 +1,74 @@
+---
+- name: 'Set fact: Start building the user statement for user {{ _user.name }}'
+  ansible.builtin.set_fact:
+    _user_statement: "{{ 'user --name=' ~ _user.name }}"
+
+- name: 'Set fact: Insert gecos into the user statement for user {{ _user.name }}'
+  ansible.builtin.set_fact:
+    _user_statement: "{{ _user_statement ~ ' --gecos=\"' ~ _user.gecos ~ '\"' }}"
+  when: >
+    _user.gecos is defined
+    and _user.gecos != ''
+    and _user.gecos != None
+
+- name: 'Set fact: Insert uid into the user statement for user {{ _user.name }}'
+  ansible.builtin.set_fact:
+    _user_statement: "{{ _user_statement ~ ' --uid=' ~ _user.uid }}"
+  when: >
+    _user.uid is defined
+    and _user.uid | string != ''
+
+- name: 'Set fact: Insert gid into the user statement for user {{ _user.name }}'
+  ansible.builtin.set_fact:
+    _user_statement: "{{ _user_statement ~ ' --gid=' ~ _user.gid }}"
+  when: >
+    _user.gid is defined
+    and _user.gid | string != ''
+
+- name: 'Set fact: Insert groups into the user statement for user {{ _user.name }}'
+  ansible.builtin.set_fact:
+    _user_statement: "{{ _user_statement ~ ' --groups=' ~ _user.groups | join(',') }}"
+  when: >
+    _user.groups is defined
+    and _user.groups | string != ''
+
+- name: 'Set fact: Insert homedir into the user statement for user {{ _user.name }}'
+  ansible.builtin.set_fact:
+    _user_statement: "{{ _user_statement ~ ' --homedir=' ~ _user.home }}"
+  when: >
+    _user.home is defined
+    and _user.home | string != ''
+
+- name: 'Set fact: Insert shell into the user statement for user {{ _user.name }}'
+  ansible.builtin.set_fact:
+    _user_statement: "{{ _user_statement ~ ' --shell=' ~ _user.shell }}"
+  when: >
+    _user.shell is defined
+    and _user.shell | string != ''
+
+- name: 'Set fact: Insert lock into the user statement for user {{ _user.name }}'
+  ansible.builtin.set_fact:
+    _user_statement: "{{ _user_statement ~ ' --lock' }}"
+  when: >
+    _user.lock is defined
+    and _user.lock
+
+- name: 'Set fact: Insert password into the user statement for user {{ _user.name }}'
+  ansible.builtin.set_fact:
+    _user_statement: >
+      {{
+          _user_statement ~ ' --iscrypted --password=' ~
+          _user.password | string | ansible.builtin.password_hash(hashtype='sha512')
+      }}
+  no_log: true
+  when: >
+    _user.gid is defined
+    and _user.gid | string != ''
+
+- name: 'Insert user creation statement into the provided kickstart for user {{ _user.name }}'
+  ansible.builtin.lineinfile:
+    path: '{{ __work_dir_kickstart_path }}'
+    regex: '^user\s--name={{ _user.name }}.+$'
+    line: '{{ _user_statement }}'
+  no_log: true
+  become: true

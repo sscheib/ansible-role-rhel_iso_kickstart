@@ -11,6 +11,21 @@
   ansible.builtin.include_tasks:
     file: 'download_iso.yml'
 
+- name: 'Include tasks to mount the downloaded ISO and extract its contents'
+  ansible.builtin.include_tasks:
+    file: 'extract_files.yml'
+  when: >
+    (
+      _kickstart_path is defined
+      and _kickstart_path != ''
+      and _kickstart_path != None
+    )
+    or
+    (
+      _enable_fips is defined
+      and _enable_fips
+    )
+
 - name: 'Handle including tasks when kickstart file is given'
   when: >
     _kickstart_path is defined
@@ -18,13 +33,30 @@
     and _kickstart_path != None
   block:
 
-    - name: 'Include tasks to mount the downloaded ISO and extract its contents'
-      ansible.builtin.include_tasks:
-        file: 'extract_files.yml'
-
-    - name: 'Include tasks to update process the provided kickstart file'
+    - name: 'Include tasks to process the provided kickstart file and add it to the ISO'
       ansible.builtin.include_tasks:
         file: 'kickstart.yml'
+
+- name: 'Handle including tasks when FIPS is required and/or kickstart file is given'
+  when: >
+    (
+      _kickstart_path is defined
+      and _kickstart_path != ''
+      and _kickstart_path != None
+    )
+    or
+    (
+      _enable_fips is defined
+      and _enable_fips
+    )
+  block:
+
+    - name: 'Include tasks to enable FIPS mode'
+      ansible.builtin.include_tasks:
+        file: 'fips.yml'
+      when: >
+        _enable_fips is defined
+        and _enable_fips
 
     - name: 'Include tasks to create the ISO with the kickstart included'
       ansible.builtin.include_tasks:

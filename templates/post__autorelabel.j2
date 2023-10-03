@@ -1,0 +1,7 @@
+%post --interpreter=/bin/bash --log=/tmp/post_autorelabel.log --erroronfail
+logger "Telling the system to relabel SELinux contexts upon restart"
+touch "/.autorelabel"
+
+# tell the system to write all data to disk (if there is any unwritten data)
+sync
+%end

@@ -54,6 +54,9 @@ _def_pxelinux_cfg_path: 'isolinux/isolinux.cfg'
 # relative path within the temporary_work_dir_source_files_path to the grub.conf file
 _def_grub_cfg_path: 'isolinux/grub.conf'
 
+# relative path within temporary_work_dir_source_files_path to the UEFI grub.conf file
+_def_grub_cfg_path_uefi: 'EFI/BOOT/grub.cfg'
+
 # whether to clean up the downloaded ISO
 _def_cleanup_iso: false
 
@@ -84,5 +87,22 @@ _def_implant_md5: true
 # package name that provides the implantisomd5 command
 _def_implantisomd5_package_name: 'isomd5sum'
 
+# relative path within the temporary_work_dir_source_files_path to the UEFI image file
+_def_uefi_image_path: 'images/efiboot.img'
+
 # whether to quiet asserts
 _def_quiet_assert: true
+
+# whether to enable FIPS mode for the ISO
+_def_enable_fips: false
+
+# post sections to insert into the kickstart file
+_def_post_sections:
+  - name: 'User creation'
+    template: 'post__users.j2'
+
+  - name: 'FIPS'
+    template: 'post__fips.j2'
+
+  - name: 'Autorelabel'
+    template: 'post__autorelabel.j2'

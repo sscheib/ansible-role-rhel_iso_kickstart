@@ -1,7 +1,7 @@
 ---
 - name: 'Ensure xorriso is present'
   ansible.builtin.package:
-    name: '{{ _xorriso_package_name }}'
+    name: '{{ _xorriso_package_name }},syslinux'
     state: 'present'
   become: true
 
@@ -29,6 +29,9 @@
   ansible.builtin.set_fact:
     __iso_label: '{{ __t_label.stdout }}'
 
+# Note: Adding '-no-emul-boot' *twice* is necessary to avoid the following issue:
+# https://unix.stackexchange.com/questions/491043/boot-grub-efi-img-invalid-image-size
+# Command has been built according to https://access.redhat.com/solutions/60959
 - name: 'Create the ISO with the included kickstart at: {{ __dest_iso_path }}'
   ansible.builtin.command:
     argv:
@@ -37,25 +40,33 @@
       - '{{ __dest_iso_path }}'
       - '-b'
       - '{{ _isolinux_bin_path }}'
-      - '-c'
-      - '{{ _boot_cat_path }}'
       - '-J'
       - '-R'
       - '-l'
-      - '-v'
+      - '-c'
+      - '{{ _boot_cat_path }}'
       - '-no-emul-boot'
       - '-boot-load-size'
       - '4'
       - '-boot-info-table'
       - '-eltorito-alt-boot'
+      - '-e'
+      - '{{ _uefi_image_path }}'
+      - '-no-emul-boot'
       - '-graft-points'
       - '-joliet-long'
       - '-V'
       - '{{ __iso_label }}'
-      - '-volid'
-      - '{{ __iso_label }}'
       - '{{ __src_files_path }}'
     creates: '{{ __dest_iso_path }}'
+  become: true
+
+- name: 'Ensure ISO is bootable via BIOS and UEFI'  # noqa: no-changed-when
+  ansible.builtin.command:
+    argv:
+      - 'isohybrid'
+      - '--uefi'
+      - '{{ __dest_iso_path }}'
   become: true
 
 - name: 'Block: Handle implanting of MD5 into ISO'

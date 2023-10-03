@@ -7,7 +7,6 @@
       - lookup('ansible.builtin.vars', item) is defined
       - lookup('ansible.builtin.vars', item) | bool | string == lookup('ansible.builtin.vars', item) | string
       - lookup('ansible.builtin.vars', item) is boolean
-      - lookup('ansible.builtin.vars', item) | type_debug == 'bool'
     success_msg: "Variable '{{ item }}' defined properly - value: '{{ lookup('ansible.builtin.vars', item) }}'"
     fail_msg: "Variable '{{ item }}' failed to validate"
     quiet: '{{ _quiet_assert }}'
@@ -18,6 +17,7 @@
     - '_cleanup_work_dir'
     - '_force_recreate_custom_iso'
     - '_implant_md5'
+    - '_enable_fips'
   loop_control:
     label: 'variable: {{ item }}'
 
@@ -114,3 +114,153 @@
     fail_msg: "Variable '_api_token' failed to validate"
     quiet: '{{ _quiet_assert }}'
   no_log: true
+
+- name: 'Ensure optional variables, are defined properly, if set (list)'
+  ansible.builtin.assert:
+    that:
+      - lookup('ansible.builtin.vars', __var) is defined
+      - lookup('ansible.builtin.vars', __var) | list | string == lookup('ansible.builtin.vars', __var) | string
+      - lookup('ansible.builtin.vars', __var) is sequence
+    success_msg: "Variable '{{ __var }}' defined properly"
+    fail_msg: "Variable '{{ __var }}' failed to validate"
+    quiet: '{{ _quiet_assert }}'
+  no_log: true
+  when: >
+    lookup('ansible.builtin.vars', __var, default='') != '' and
+    lookup('ansible.builtin.vars', __var, default='') | length > 0
+  loop:
+    - '_users'
+    - '_post_sections'
+  register: '__tmp_list_variables'
+  loop_control:
+    loop_var: '__var'
+    label: 'variable: {{ __var }}'
+
+- name: 'Ensure post_sections are defined properly'
+  ansible.builtin.assert:
+    that:
+      - _section.name is defined
+      - _section.name is string
+      - _section.name != None
+      - _section.name != ''
+
+      - _section.template is defined
+      - _section.template is string
+      - _section.template != None
+      - _section.template != ''
+
+      # load the template to see if it exists
+      - lookup('template', _section.template) | length > 0
+
+  loop: '{{ _post_sections }}'
+  loop_control:
+    loop_var: '_section'
+  when: >
+    _post_sections is defined
+    and _post_sections | length > 0
+
+- name: 'Ensure _users is defined properly'
+  ansible.builtin.assert:
+    that:
+      # _user.name
+      - _user.name is defined
+      - _user.name is string
+      - _user.name != None
+      - _user.name != ''
+
+      # _user.gecos
+      - (_user.gecos is defined) | ternary(_user.gecos | default(None) is string, true)
+      - (_user.gecos is defined) | ternary(_user.gecos | default(None) != None, true)
+      - (_user.gecos is defined) | ternary(_user.gecos | default(None) != '', true)
+
+      # _user.shell
+      - (_user.shell is defined) | ternary(_user.shell | default(None) is string, true)
+      - (_user.shell is defined) | ternary(_user.shell | default(None) != None, true)
+      - (_user.shell is defined) | ternary(_user.shell | default(None) != '', true)
+
+      # _user.home
+      - (_user.home is defined) | ternary(_user.home | default(None) is string, true)
+      - (_user.home is defined) | ternary(_user.home | default(None) != None, true)
+      - (_user.home is defined) | ternary(_user.home | default(None) != '', true)
+
+      # _user.password
+      - (_user.password is defined) | ternary(_user.password | default(None) is string, true)
+      - (_user.password is defined) | ternary(_user.password | default(None) != None, true)
+      - (_user.password is defined) | ternary(_user.password | default(None) != '', true)
+
+      # _user.gid
+      - (_user.gid is defined) | ternary(_user.gid | default(None) | int | string == _user.gid | default(None) | string, true)
+      - (_user.gid is defined) | ternary(_user.gid | default(None) is number, true)
+      - (_user.gid is defined) | ternary(_user.gid | default(None) is integer, true)
+      - (_user.gid is defined) | ternary(_user.gid | default(None) >= 1, true)
+
+      # _user.uid
+      - (_user.uid is defined) | ternary(_user.uid | default(None) | int | string == _user.uid | default(None) | string, true)
+      - (_user.uid is defined) | ternary(_user.uid | default(None) is number, true)
+      - (_user.uid is defined) | ternary(_user.uid | default(None) is integer, true)
+      - (_user.uid is defined) | ternary(_user.uid | default(None) >= 1, true)
+
+      # _user.create_user_group
+      - (_user.create_user_group is defined) | ternary(_user.create_user_group | default(None) | bool | string == _user.create_user_group | default(None) | string, true)
+      - (_user.create_user_group is defined) | ternary(_user.create_user_group | default(None) is boolean, true)
+
+      # _user.lock
+      - (_user.lock is defined) | ternary(_user.lock | default(None) | bool | string == _user.lock | default(None) | string, true)
+      - (_user.lock is defined) | ternary(_user.lock | default(None) is boolean, true)
+
+      # _user.privileged
+      - (_user.privileged is defined) | ternary(_user.privileged | default(None) | bool | string == _user.privileged | default(None) | string, true)
+      - (_user.privileged is defined) | ternary(_user.privileged | default(None) is boolean, true)
+
+      # _user.groups
+      - (_user.groups is defined) | ternary(_user.groups | default([]) | list | string == _user.groups | default(None) | string, true)
+      - (_user.groups is defined) | ternary(_user.groups | default([]) is sequence, true)
+
+      # _user.authorized_keys
+      - (_user.authorized_keys is defined) | ternary(_user.authorized_keys | default([]) | list | string == _user.authorized_keys | default(None) | string, true)
+      - (_user.authorized_keys is defined) | ternary(_user.authorized_keys | default([]) is sequence, true)
+    success_msg: 'Users are defined correctly'
+    fail_msg: 'One or more users failed to validated correctly'
+  no_log: true
+  loop: '{{ _users }}'
+  loop_control:
+    loop_var: '_user'
+  when: >
+    _users is defined
+    and _users | length > 0
+
+- name: 'Ensure _users does not specify conflicting options'
+  ansible.builtin.assert:
+    that:
+      - _user.home is defined
+      - _user.home is string
+      - _user.home != ''
+      - _user.home != None
+    success_msg: 'No conflicting options specified'
+    fail_msg: 'A user needs a home directory when authorized keys are specified'
+  no_log: true
+  loop: '{{ _users }}'
+  loop_control:
+    loop_var: '_user'
+  when: >
+    _user.authorized_keys is defined
+    and _user.authorized_keys | length > 0
+
+- name: 'Skip block if no variables defined beforehand'
+  when: >
+    __tmp_list_variables.results is defined and
+    __tmp_list_variables.results | map(attribute='skipped', default=[]) | select() | length > 0
+  block:
+
+    - name: 'Show variables that have been skipped to check, due to being undefined'
+      ansible.builtin.debug:
+        msg: 'Variable name: {{ __var }}'
+      loop:
+        - "{{ __tmp_list_variables['results'] | default([]) }}"
+      loop_control:
+        loop_var: '__var'
+        label: '{{ __var }}'
+
+    - name: 'Ensure above variables are not important to you, as they are not going to be used!'
+      ansible.builtin.pause:
+        seconds: 5

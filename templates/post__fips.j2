@@ -1,0 +1,7 @@
+%post --interpreter=/bin/bash --log=/tmp/post_fips.log --erroronfail
+logger "Starting anaconda postinstall to enable FIPS"
+
+{% if _enable_fips is defined and _enable_fips %}
+fips-mode-setup --enable 
+{% endif %}{# if _enable_fips is defined and _enable_fips #}
+%end
