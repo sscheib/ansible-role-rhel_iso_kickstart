@@ -22,8 +22,6 @@ Unfortunately, specifying `RHEL` as the operating system in `meta/main.yml` is n
 
 I have probably not tested every combination possible with the variables. If you find an issue, feel free to raise it or provide a pull request to fix it.
 
-Currently this role only supports `BIOS` deployments. `UEFI` support is planned for a later release.
-
 Provided with this role is an example Kickstart that can be used as a start to building your own. This Kickstart implements the recommended Red Hat Satellite file system layout
 [1](https://access.redhat.com/documentation/en-us/red_hat_satellite/6.12/html/installing_satellite_server_in_a_connected_network_environment/preparing_your_environment_for_installation_satellite)
 
