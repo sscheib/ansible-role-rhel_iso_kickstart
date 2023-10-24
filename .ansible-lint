@@ -1,0 +1,29 @@
+---
+enable_list:
+  - 'args'
+  - 'empty-string-compare'
+  - 'no-log-password'
+  - 'no-same-owner'
+  - 'name[prefix]'
+
+kinds:
+  - yaml: '.ansible-lint'
+  - yaml: '.github/workflows/ansible-lint.yml'
+  - yaml: '.pre-commit-config.yaml'
+  - yaml: '.yamllint'
+  - yaml: '**/*.{yml,yaml}'
+
+loop_var_prefix: '^(__|{role}_)'
+max_block_depth: 20
+offline: true
+profile: 'production'
+skip_action_validation: false
+skip_list: []
+task_name_prefix: '{stem} | '
+use_default_rules: true
+var_naming_pattern: '^[a-z_][a-z0-9_]*$'
+warn_list:
+  - 'experimental'
+write_list:
+  - 'none'
+...
