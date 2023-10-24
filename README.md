@@ -1,5 +1,4 @@
-[![ansible-lint](https://github.com/sscheib/ansible-role-rhel_iso_kickstart/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/sscheib/ansible-role-rhel_iso_kickstart/actions/workflows/ansible-lint.ymlo) [![Publish latest release to Ansible Galaxy](https://github.com/sscheib/ansible-role-rhel_iso_kickstart/actions/workflows/ansible-galaxy.yml/badge.svg)](https://github.com/sscheib/ansible-role-rhel_iso_kickstart/actions/workflows/ansible-galaxy.yml)
-
+[![ansible-lint](https://github.com/sscheib/ansible-role-rhel_iso_kickstart/actions/workflows/ansible-lint.yml/badge.svg?branch=main)](https://github.com/sscheib/ansible-role-rhel_iso_kickstart/actions/workflows/ansible-lint.yml) [![Publish latest release to Ansible Galaxy](https://github.com/sscheib/ansible-role-rhel_iso_kickstart/actions/workflows/ansible-galaxy.yml/badge.svg?branch=main)](https://github.com/sscheib/ansible-role-rhel_iso_kickstart/actions/workflows/ansible-galaxy.yml)
 rhel_iso_kickstart
 =========
 
