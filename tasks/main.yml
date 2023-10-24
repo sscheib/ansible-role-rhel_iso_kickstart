@@ -71,3 +71,4 @@
     or
     (_cleanup_work_dir is defined
     and _cleanup_work_dir)
+...

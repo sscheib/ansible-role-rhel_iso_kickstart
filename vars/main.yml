@@ -17,7 +17,11 @@ _api_token: '{{ api_token | mandatory }}'
 _redhat_portal_auth_url: '{{ redhat_portal_auth_url | default(_def_redhat_portal_auth_url) }}'
 
 # base URL for image downloading from the Red Hat Customer Portal
-_redhat_portal_download_base_url: '{{ redhat_portal_download_base_url | default(_def_redhat_portal_download_base_url) }}'
+_redhat_portal_download_base_url: >-
+  {{
+    redhat_portal_download_base_url |
+    default(_def_redhat_portal_download_base_url)
+  }}
 
 # directory to store the downloaded ISO in
 _download_directory: '{{ download_directory | default(_def_download_directory) }}'
@@ -45,10 +49,26 @@ _temporary_work_dir_path_mode: '{{ temporary_work_dir_path_mode | default(_def_t
 
 # relative path to a directory within the temporary_work_dir_path that will
 # contain the files that will be added to the custom ISO
-_temporary_work_dir_source_files_path: '{{ temporary_work_dir_source_files_path | default(_def_temporary_work_dir_source_files_path) }}'
-_temporary_work_dir_source_files_path_owner: '{{ temporary_work_dir_source_files_path_owner | default(_def_temporary_work_dir_source_files_path_owner) }}'
-_temporary_work_dir_source_files_path_group: '{{ temporary_work_dir_source_files_path_group | default(_def_temporary_work_dir_source_files_path_group) }}'
-_temporary_work_dir_source_files_path_mode: '{{ temporary_work_dir_source_files_path_mode | default(_def_temporary_work_dir_source_files_path_mode) }}'
+_temporary_work_dir_source_files_path: >-
+  {{
+    temporary_work_dir_source_files_path |
+    default(_def_temporary_work_dir_source_files_path)
+  }}
+_temporary_work_dir_source_files_path_owner: >-
+  {{
+    temporary_work_dir_source_files_path_owner |
+    default(_def_temporary_work_dir_source_files_path_owner)
+  }}
+_temporary_work_dir_source_files_path_group: >-
+  {{
+    temporary_work_dir_source_files_path_group |
+    default(_def_temporary_work_dir_source_files_path_group)
+  }}
+_temporary_work_dir_source_files_path_mode: >-
+  {{
+    temporary_work_dir_source_files_path_mode |
+    default(_def_temporary_work_dir_source_files_path_mode)
+  }}
 
 # destination directory for the custom ISO
 _dest_dir_path: '{{ dest_dir_path | default(_def_dest_dir_path) }}'
@@ -121,3 +141,4 @@ _users: '{{ users | default(undef()) }}'
 
 # post sections to insert into the kickstart file
 _post_sections: '{{ post_sections | default(_def_post_sections) }}'
+...

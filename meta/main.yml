@@ -3,7 +3,8 @@ galaxy_info:
   role_name: 'rhel_iso_kickstart'
   namespace: 'sscheib'
   author: 'Steffen Scheib'
-  description: 'Downloads a RHEL ISO from the Red Hat Customer Portal and optionally implants a kickstart file into a custom ISO'
+  description: >-
+    Downloads a RHEL ISO from the Red Hat Customer Portal and optionally implants a kickstart file into a custom ISO
   issue_tracker_url: 'https://github.com/sscheib/ansible-role-rhel_iso_kickstart/issues'
   license: 'GPL-2.0-or-later'
   min_ansible_version: '2.12'
@@ -15,3 +16,4 @@ galaxy_info:
     - 'rhel'
     - 'kickstart'
 dependencies: []
+...
