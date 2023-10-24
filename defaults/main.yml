@@ -106,3 +106,4 @@ _def_post_sections:
 
   - name: 'Autorelabel'
     template: 'post__autorelabel.j2'
+...

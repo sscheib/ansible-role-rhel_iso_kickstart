@@ -41,3 +41,4 @@
     path: '{{ _temporary_mount_path }}'
     state: 'unmounted'
   become: true
+...

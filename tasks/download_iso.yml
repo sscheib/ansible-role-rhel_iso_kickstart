@@ -21,27 +21,27 @@
     headers:
       Accept: '*/*'
       Authorization: 'Bearer {{ __access_token }}'
-  register: __t_iso_information
+  register: '__t_iso_information'
 
 - name: 'Ensure filename has been returned by the API'
   ansible.builtin.assert:
     that:
-      - __t_iso_information.json is defined
-      - __t_iso_information.json is not string
-      - __t_iso_information.json is iterable
-      - __t_iso_information.json is sequence
-      - __t_iso_information.json is mapping
+      - '__t_iso_information.json is defined'
+      - '__t_iso_information.json is not string'
+      - '__t_iso_information.json is iterable'
+      - '__t_iso_information.json is sequence'
+      - '__t_iso_information.json is mapping'
 
-      - __t_iso_information.json.body is defined
-      - __t_iso_information.json.body is not string
-      - __t_iso_information.json.body is iterable
-      - __t_iso_information.json.body is sequence
-      - __t_iso_information.json.body is mapping
+      - '__t_iso_information.json.body is defined'
+      - '__t_iso_information.json.body is not string'
+      - '__t_iso_information.json.body is iterable'
+      - '__t_iso_information.json.body is sequence'
+      - '__t_iso_information.json.body is mapping'
 
-      - __t_iso_information.json.body.filename is defined
-      - __t_iso_information.json.body.filename is string
-      - __t_iso_information.json.body.filename != ''
-      - __t_iso_information.json.body.filename != None
+      - '__t_iso_information.json.body.filename is defined'
+      - '__t_iso_information.json.body.filename is string'
+      - "__t_iso_information.json.body.filename != ''"
+      - '__t_iso_information.json.body.filename != None'
     success_msg: 'The API returned the filename of the ISO ({{ __t_iso_information.json.body.filename }})'
     fail_msg: 'The API did not return the filename of the ISO'
     quiet: '{{ _quiet_assert }}'
@@ -67,3 +67,4 @@
     checksum: 'sha256:{{ _checksum }}'
     timeout: '{{ _download_timeout }}'
   become: true
+...

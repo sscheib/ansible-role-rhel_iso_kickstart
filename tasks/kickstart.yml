@@ -25,7 +25,8 @@
   ansible.builtin.lineinfile:
     path: '{{ __work_dir_kickstart_path }}'
     regex: '^rootpw.*$'
-    line: "rootpw --iscrypted {{ _kickstart_root_password | string | ansible.builtin.password_hash(hashtype='sha512') }}"
+    line: >-
+      "rootpw --iscrypted {{ _kickstart_root_password | string | ansible.builtin.password_hash(hashtype='sha512') }}"
   no_log: true
   become: true
 
@@ -88,7 +89,7 @@
             cmd: 'ksvalidator {{ __work_dir_kickstart_path }}'
           register: '__t_ks_validate'
           changed_when: false
-          failed_when: __t_ks_validate.rc != 0
+          failed_when: '__t_ks_validate.rc != 0'
 
       rescue:
         - name: 'Show command output when the kickstart validation failed'
@@ -175,3 +176,4 @@
     regexp: '^set\stimeout=\d+'
     line: 'set timeout={{ _grub_menu_selection_timeout }}'
   become: true
+...

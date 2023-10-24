@@ -27,3 +27,4 @@
     - '{{ __src_files_path }}/{{ _grub_cfg_path_uefi }}'  # UEFI
   loop_control:
     loop_var: '_cfg_path'
+...
