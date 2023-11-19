@@ -24,8 +24,11 @@ Unfortunately, specifying `RHEL` as the operating system in `meta/main.yml` is n
 
 I have probably not tested every combination possible with the variables. If you find an issue, feel free to raise it or provide a pull request to fix it.
 
-Provided with this role is an example Kickstart that can be used as a start to building your own. This Kickstart implements the recommended Red Hat Satellite file system layout
+Provided with this role is an example Kickstart (for both UEFI and BIOS types of systems) that can be used as a start to building your own. This Kickstart implements the recommended Red Hat Satellite file system layout
 [1](https://access.redhat.com/documentation/en-us/red_hat_satellite/6.12/html/installing_satellite_server_in_a_connected_network_environment/preparing_your_environment_for_installation_satellite)
+
+The `example-uefi.ks` can be used for *both* UEFI and BIOS systems, but is a little more complexer due to the nature of supporting both UEFI and BIOS. Including also the `example.ks` which *only* supports BIOS.
+
 
 Role Variables
 --------------
