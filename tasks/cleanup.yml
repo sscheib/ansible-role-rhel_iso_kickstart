@@ -1,5 +1,5 @@
 ---
-- name: 'Ensure downloaded ISO is removed: {{ __iso_path }}'
+- name: 'cleanup | Ensure downloaded ISO is removed: {{ __iso_path }}'
   ansible.builtin.file:
     path: '{{ __iso_path }}'
     state: 'absent'
@@ -8,7 +8,7 @@
     _cleanup_iso is defined
     and _cleanup_iso
 
-- name: 'Ensure temporary work directory is removed: {{ _temporary_work_dir_path }}'
+- name: 'cleanup | Ensure temporary work directory is removed: {{ _temporary_work_dir_path }}'
   ansible.builtin.file:
     path: '{{ _temporary_work_dir_path }}'
     state: 'absent'

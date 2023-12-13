@@ -1,5 +1,5 @@
 ---
-- name: 'Authenticate on the Red Hat Portal'
+- name: 'authenticate | Authenticate on the Red Hat Portal'
   ansible.builtin.uri:
     url: '{{ _redhat_portal_auth_url }}'
     return_content: true
@@ -12,7 +12,7 @@
   register: '__t_auth'
   no_log: true
 
-- name: 'Ensure access token has been returned by the API'
+- name: 'authenticate | Ensure access token has been returned by the API'
   ansible.builtin.assert:
     that:
       - '__t_auth.json is defined'
@@ -30,7 +30,7 @@
     quiet: '{{ _quiet_assert }}'
   no_log: true
 
-- name: 'Set fact: Extract access token'
+- name: 'authenticate | Set fact: Extract access token'
   ansible.builtin.set_fact:
     __access_token: '{{ __t_auth.json.access_token }}'
 ...

@@ -1,5 +1,5 @@
 ---
-- name: 'Ensure download directory exists: {{ _download_directory }}'
+- name: 'download_iso | Ensure download directory exists: {{ _download_directory }}'
   ansible.builtin.file:
     path: '{{ _download_directory }}'
     state: 'directory'
@@ -8,11 +8,11 @@
     mode: '{{ _download_directory_mode }}'
   become: true
 
-- name: 'Set fact: Red Hat Portal API download URL'
+- name: 'download_iso | Set fact: Red Hat Portal API download URL'
   ansible.builtin.set_fact:
     __download_url: '{{ _redhat_portal_download_base_url }}/{{ _checksum }}/download'
 
-- name: 'Gather information about the ISO to download'
+- name: 'download_iso | Gather information about the ISO to download'
   ansible.builtin.uri:
     url: '{{ __download_url }}'
     method: 'GET'
@@ -23,7 +23,7 @@
       Authorization: 'Bearer {{ __access_token }}'
   register: '__t_iso_information'
 
-- name: 'Ensure filename has been returned by the API'
+- name: 'download_iso | Ensure filename has been returned by the API'
   ansible.builtin.assert:
     that:
       - '__t_iso_information.json is defined'
@@ -46,15 +46,15 @@
     fail_msg: 'The API did not return the filename of the ISO'
     quiet: '{{ _quiet_assert }}'
 
-- name: 'Set fact: Extract filename of the ISO to download'
+- name: 'download_iso | Set fact: Extract filename of the ISO to download'
   ansible.builtin.set_fact:
     __iso_filename: '{{ __t_iso_information.json.body.filename }}'
 
-- name: 'Set fact: Destination path for the ISO to download'
+- name: 'download_iso | Set fact: Destination path for the ISO to download'
   ansible.builtin.set_fact:
     __iso_path: '{{ _download_directory }}/{{ __iso_filename }}'
 
-- name: 'Download and verify the checksum of the ISO: {{ __iso_filename }}'
+- name: 'download_iso | Download and verify the checksum of the ISO: {{ __iso_filename }}'
   ansible.builtin.get_url:
     url: '{{ __download_url }}'
     dest: '{{ __iso_path }}'
