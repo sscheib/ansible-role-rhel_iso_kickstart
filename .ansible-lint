@@ -1,17 +1,18 @@
 ---
-enable_list:
-  - 'args'
-  - 'empty-string-compare'
-  - 'no-log-password'
-  - 'no-same-owner'
-  - 'name[prefix]'
+exclude_paths:
+  - '.git/'
+  - 'files/'
 
 kinds:
+  - tasks: 'tasks/*.{yml,yaml}'
+  - vars: 'vars/*.{yml,yaml}'
+  - vars: 'defaults/*.{yml,yaml}'
+  - meta: 'meta/main.{yml,yaml}'
   - yaml: '.ansible-lint'
   - yaml: '.github/workflows/*.{yml,yaml}'
   - yaml: '.pre-commit-config.yaml'
   - yaml: '.yamllint'
-  - yaml: '**/*.{yml,yaml}'
+  - yaml: 'collections/requirements.yml'
 
 loop_var_prefix: '^(__|{role}_)'
 max_block_depth: 20

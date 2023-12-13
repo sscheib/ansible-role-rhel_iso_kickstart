@@ -1,7 +1,7 @@
 ---
 # NOTE: _quiet_assert does not impact this task, as it first needs to be ensured that it actually is
 #       properly defined
-- name: 'Ensure mandatory variables, as  well as variables, which have a default value, are set (boolean)'
+- name: 'assert | Ensure mandatory variables, as  well as variables, which have a default value, are set (boolean)'
   ansible.builtin.assert:
     that:
       - "lookup('ansible.builtin.vars', item) is defined"
@@ -21,7 +21,7 @@
   loop_control:
     label: 'variable: {{ item }}'
 
-- name: 'Ensure mandatory variables, as well as variables, which have a default value, are set (string)'
+- name: 'assert | Ensure mandatory variables, as well as variables, which have a default value, are set (string)'
   ansible.builtin.assert:
     that:
       - "lookup('ansible.builtin.vars', item) is defined"
@@ -63,7 +63,7 @@
   loop_control:
     label: 'variable: {{ item }}'
 
-- name: 'Ensure mandatory variables, as well as variables, which have a default value, are set (integer)'
+- name: 'assert | Ensure mandatory variables, as well as variables, which have a default value, are set (integer)'
   ansible.builtin.assert:
     that:
       - "lookup('ansible.builtin.vars', item) is defined"
@@ -80,7 +80,7 @@
   loop_control:
     label: 'variable: {{ item }}'
 
-- name: 'Ensure kickstart path is set when defined'
+- name: 'assert | Ensure kickstart path is set when defined'
   ansible.builtin.assert:
     that:
       - '_kickstart_path is string'
@@ -91,7 +91,7 @@
     quiet: '{{ _quiet_assert }}'
   when: '_kickstart_path is defined'
 
-- name: 'Ensure kickstart root password is set when defined'
+- name: 'assert | Ensure kickstart root password is set when defined'
   ansible.builtin.assert:
     that:
       - '_kickstart_root_password is string'
@@ -103,7 +103,7 @@
   no_log: true
   when: '_kickstart_root_password is defined'
 
-- name: 'Ensure api_token is defined properly (string)'
+- name: 'assert | Ensure api_token is defined properly (string)'
   ansible.builtin.assert:
     that:
       - '_api_token is defined'
@@ -115,7 +115,7 @@
     quiet: '{{ _quiet_assert }}'
   no_log: true
 
-- name: 'Ensure optional variables, are defined properly, if set (list)'
+- name: 'assert | Ensure optional variables, are defined properly, if set (list)'
   ansible.builtin.assert:
     that:
       - "lookup('ansible.builtin.vars', __var) is defined"
@@ -136,7 +136,7 @@
     loop_var: '__var'
     label: 'variable: {{ __var }}'
 
-- name: 'Ensure post_sections are defined properly'
+- name: 'assert | Ensure post_sections are defined properly'
   ansible.builtin.assert:
     that:
       - '_section.name is defined'
@@ -159,7 +159,7 @@
     _post_sections is defined
     and _post_sections | length > 0
 
-- name: 'Ensure _users is defined properly'
+- name: 'assert | Ensure _users is defined properly'
   ansible.builtin.assert:
     that:
       # _user.name
@@ -243,7 +243,7 @@
     _users is defined
     and _users | length > 0
 
-- name: 'Ensure _users does not specify conflicting options'
+- name: 'assert | Ensure _users does not specify conflicting options'
   ansible.builtin.assert:
     that:
       - '_user.home is defined'
@@ -260,13 +260,13 @@
     _user.authorized_keys is defined
     and _user.authorized_keys | length > 0
 
-- name: 'Skip block if no variables defined beforehand'
+- name: 'assert | Skip block if no variables defined beforehand'
   when: >
     __tmp_list_variables.results is defined and
     __tmp_list_variables.results | map(attribute='skipped', default=[]) | select() | length > 0
   block:
 
-    - name: 'Show variables that have been skipped to check, due to being undefined'
+    - name: 'assert | Show variables that have been skipped to check, due to being undefined'
       ansible.builtin.debug:
         msg: 'Variable name: {{ __var }}'
       loop:
@@ -275,7 +275,7 @@
         loop_var: '__var'
         label: '{{ __var }}'
 
-    - name: 'Ensure above variables are not important to you, as they are not going to be used!'
+    - name: 'assert | Ensure above variables are not important to you, as they are not going to be used!'
       ansible.builtin.pause:
         seconds: 5
 ...
