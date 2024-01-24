@@ -34,7 +34,7 @@
     dest: '{{ __src_files_path }}'
     archive: true
   become: true
-  delegate_to: 'localhost'
+  delegate_to: '{{ inventory_hostname }}'
 
 - name: 'extract_files | Unmount temporarily mounted ISO'
   ansible.posix.mount:
