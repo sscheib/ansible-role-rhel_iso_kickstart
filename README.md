@@ -61,6 +61,7 @@ Role Variables
 | `iso_owner`                                  | `root`                       | false    | owner of the downloaded ISO to apply                                           |
 | `kickstart_path`                             | unset                        | false    | path to the kickstart file to put into the ISO                                 |
 | `kickstart_root_password`                    | unset                        | false    | root password to set to in the provided kickstart                              |
+| `kickstart_hostname`                         | unset                        | false    | Hostname the system that boots the kickstart should have                       |
 | `ksvalidator_package_name`                   | `pykickstart`                | false    | name of the package that provides the command `ksvalidator`                    |
 | `post_sections`                              | Check in `defaults/main.yml` | false    | List of post sections to include into the kickstart                            |
 | `pxelinux_cfg_path`                          | `isolinux/isolinux.cfg`      | false    | relative path from `temporary_work_dir_source_files_path` to `isolinux.cfg`    |
@@ -209,6 +210,7 @@ Example Playbook
     kickstart_path: 'example.ks'
     validate_kickstart: true
     ksvalidator_package_name: 'pykickstart'
+    kickstart_hostname: 'my.host.example.com'
     temporary_mount_path: '/mnt'
     temporary_work_dir_path: '/home/steffen/workdir'
     temporary_work_dir_path_owner: 'root'

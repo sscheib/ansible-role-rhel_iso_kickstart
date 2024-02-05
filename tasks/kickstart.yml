@@ -72,6 +72,18 @@
   loop_control:
     loop_var: '_post'
 
+- name: 'kickstart | Insert hostname statement into kickstart: {{ _kickstart_hostname }}'
+  ansible.builtin.lineinfile:
+    path: '{{ __work_dir_kickstart_path }}'
+    regexp: '^network(?: --hostname {{ _kickstart_hostname }})?(.*)$'
+    line: 'network --hostname {{ _kickstart_hostname }}\1'
+    backrefs: true
+  become: true
+  when: >
+    _kickstart_hostname is defined
+    and _kickstart_hostname != ''
+    and _kickstart_hostname != None
+
 - name: 'kickstart | Handle validation of kickstart'
   when: >
     _validate_kickstart is defined
