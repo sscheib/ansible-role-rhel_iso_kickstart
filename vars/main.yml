@@ -141,4 +141,8 @@ _users: '{{ users | default(undef()) }}'
 
 # post sections to insert into the kickstart file
 _post_sections: '{{ post_sections | default(_def_post_sections) }}'
+
+# hostname the system that boots the kickstart should have
+# if you'd like to have the hostname propagated via DHCP, don't use this variable
+_kickstart_hostname: '{{ kickstart_hostname | default(undef()) }}'
 ...
