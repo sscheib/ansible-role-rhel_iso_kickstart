@@ -190,5 +190,4 @@
     regexp: '^set\stimeout=\d+'
     line: 'set timeout={{ _grub_menu_selection_timeout }}'
   become: true
-
 ...
