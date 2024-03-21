@@ -44,6 +44,10 @@ Role Variables
 | `custom_iso_mode`                            | `0600`                       | false    | owner of the custom ISO to apply                                               |
 | `custom_iso_owner`                           | `root`                       | false    | chmod of the custom ISO to apply                                               |
 | `dest_dir_path`                              | `{{ playbook_dir }}`         | false    | destination directory for the custom ISO                                       |
+| `dest_dir_owner`                             | `root`                       | false    | owner of the parent directory for the custom ISO                               |
+| `dest_dir_group`                             | `root`                       | false    | group of the parent directory for the custom ISO                               |
+| `dest_dir_mode`                              | `0755`                       | false    | chmod of the parent directory for the custom ISO                               |
+| `dest_iso_filename`                          | original ISO name + `-ks.iso`| false    | filename to use for the custom ISO                                             |
 | `download_directory`                         | `{{ playbook_dir }}`         | false    | directory to store the downloaded ISO in                                       |
 | `download_directory_group`                   | `root`                       | false    | group of the downloaded ISO to apply                                           |
 | `download_directory_mode`                    | `0600`                       | false    | owner of the downloaded ISO to apply                                           |

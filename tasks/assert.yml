@@ -47,6 +47,9 @@
     - '_temporary_work_dir_source_files_path_group'
     - '_temporary_work_dir_source_files_path_mode'
     - '_dest_dir_path'
+    - '_dest_dir_owner'
+    - '_dest_dir_group'
+    - '_dest_dir_mode'
     - '_xorriso_package_name'
     - '_isolinux_bin_path'
     - '_boot_cat_path'
@@ -132,6 +135,26 @@
     - '_users'
     - '_post_sections'
   register: '__tmp_list_variables'
+  loop_control:
+    loop_var: '__var'
+    label: 'variable: {{ __var }}'
+
+- name: 'assert | Ensure optional string variables are defined properly - if defined'
+  ansible.builtin.assert:
+    that:
+      - "lookup('ansible.builtin.vars', __var) is defined"
+      - "lookup('ansible.builtin.vars', __var) is string"
+      - "lookup('ansible.builtin.vars', __var) != None"
+      - "lookup('ansible.builtin.vars', __var) != ''"
+    success_msg: "Variable '{{ __var }}' defined properly - value: '{{ lookup('ansible.builtin.vars', __var) }}'"
+    fail_msg: "Variable '{{ __var }}' failed to validate"
+    quiet: '{{ _sat_quiet_assert }}'
+  when: >-
+    lookup('ansible.builtin.vars', __var, default='') is defined
+    and lookup('ansible.builtin.vars', __var, default='') != ''
+    and lookup('ansible.builtin.vars', __var, default='') != None
+  loop:
+    - '_dest_iso_filename'
   loop_control:
     loop_var: '__var'
     label: 'variable: {{ __var }}'
