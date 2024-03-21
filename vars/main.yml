@@ -73,7 +73,7 @@ _temporary_work_dir_source_files_path_mode: >-
 # destination directory for the custom ISO
 _dest_dir_path: '{{ dest_dir_path | default(_def_dest_dir_path) }}'
 _dest_dir_path_owner: '{{ dest_dir_path_owner | default(_def_dest_dir_path_owner) }}'
-_dest_dir_path_group: '{{ dest_dir_path_group | default(_dest_dir_path_group) }}'
+_dest_dir_path_group: '{{ dest_dir_path_group | default(_def_dest_dir_path_group) }}'
 _dest_dir_path_mode: '{{ dest_dir_path_mode | default(_def_dest_dir_path_mode) }}'
 
 # filename to use for the custom ISO

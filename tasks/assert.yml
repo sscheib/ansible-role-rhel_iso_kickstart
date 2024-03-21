@@ -47,9 +47,9 @@
     - '_temporary_work_dir_source_files_path_group'
     - '_temporary_work_dir_source_files_path_mode'
     - '_dest_dir_path'
-    - '_dest_dir_owner'
-    - '_dest_dir_group'
-    - '_dest_dir_mode'
+    - '_dest_dir_path_owner'
+    - '_dest_dir_path_group'
+    - '_dest_dir_path_mode'
     - '_xorriso_package_name'
     - '_isolinux_bin_path'
     - '_boot_cat_path'
@@ -148,7 +148,7 @@
       - "lookup('ansible.builtin.vars', __var) != ''"
     success_msg: "Variable '{{ __var }}' defined properly - value: '{{ lookup('ansible.builtin.vars', __var) }}'"
     fail_msg: "Variable '{{ __var }}' failed to validate"
-    quiet: '{{ _sat_quiet_assert }}'
+    quiet: '{{ _quiet_assert }}'
   when: >-
     lookup('ansible.builtin.vars', __var, default='') is defined
     and lookup('ansible.builtin.vars', __var, default='') != ''
