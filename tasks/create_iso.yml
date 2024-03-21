@@ -5,9 +5,26 @@
     state: 'present'
   become: true
 
+- name: 'create_iso | Ensure the destination directory for the ISO exists: {{ _dest_dir_path }}'
+  ansible.builtin.file:
+    path: '{{ _dest_dir_path }}'
+    state: 'directory'
+    owner: '{{ _dest_dir_path_owner }}'
+    group: '{{ _dest_dir_path_group }}'
+    mode: '{{ _dest_dir_path_mode }}'
+  become: true
+
 - name: 'create_iso | Set fact: Destination ISO path'
   ansible.builtin.set_fact:
-    __dest_iso_path: "{{ _dest_dir_path ~ '/' ~ __iso_filename | splitext | first ~ '-ks.iso' }}"
+    __dest_iso_path: >-
+      {{
+        _dest_dir_path ~ '/' ~ __iso_filename | splitext | first ~ '-ks.iso'
+        if _dest_iso_filename is not defined
+        or _dest_iso_filename == ''
+        or _dest_iso_filename == None
+        else
+        _dest_dir_path ~ '/' ~ _dest_iso_filename
+      }}
 
 - name: 'create_iso | Remove ISO if forced to recreate the ISO is asked for: {{ __dest_iso_path }}'
   ansible.builtin.file:

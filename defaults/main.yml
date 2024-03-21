@@ -38,6 +38,9 @@ _def_temporary_work_dir_source_files_path_mode: '0755'
 
 # destination directory for the custom ISO
 _def_dest_dir_path: '{{ playbook_dir }}'
+_def_dest_dir_path_owner: 'root'
+_def_dest_dir_path_group: 'root'
+_def_dest_dir_path_mode: '0755'
 
 # name of the package that provides xorriso
 _def_xorriso_package_name: 'xorriso'
