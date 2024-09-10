@@ -72,6 +72,7 @@ Role Variables
 | `quiet_assert`                               | `true`                       | false    | whether to quiet asserts                                                       |
 | `redhat_portal_auth_url`                     | Check in `defaults/main.yml` | false    | URL to the Red Hat Portal to authenticate against                              |
 | `redhat_portal_download_base_url`            | Check in `defaults/main.yml` | false    | base URL for image downloading from the Red Hat Customer Portal                |
+| `rsync_package_name`                         | `rsync`                      | false    | name of the package that provides the command `rsync`                          |
 | `temporary_mount_path`                       | `/mnt`                       | false    | path to a temporary (empty) mount point to mount the downloaded ISO to         |
 | `temporary_work_dir_path`                    | `{{ playbook_dir }}/workdir` | false    | temporary directory which will be used to extract the ISO files to             |
 | `temporary_work_dir_path_group`              | `root`                       | false    | group of the temporary directory to apply                                      |
@@ -190,6 +191,7 @@ Dependencies
 
 This role makes use of the [Ansible Posix collection](https://github.com/ansible-collections/ansible.posix).
 Depending on whether certain actions are required, the role needs to install the following packages:
+- `rsync`: To extract files from mounted ISO to work directory
 - `xorriso`: To create a custom ISO
 - `isomd5sum`: To implant a MD5 checksum into a custom ISO
 - `pykickstart`: To validate a given Kickstart file
