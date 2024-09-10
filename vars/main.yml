@@ -84,6 +84,9 @@ _dest_iso_filename: '{{ dest_iso_filename | default(None) }}'
 # name of the package that provides xorriso
 _xorriso_package_name: '{{ xorriso_package_name | default(_def_xorriso_package_name) }}'
 
+# name of the package that provides rsync
+_rsync_package_name: '{{ rsync_package_name | default(_def_rsync_package_name) }}'
+
 # relative path within the temporary_work_dir_source_files_path to the isolinux.bin file
 _isolinux_bin_path: '{{ isolinux_bin_path | default(_def_isolinux_bin_path) }}'
 

@@ -45,6 +45,9 @@ _def_dest_dir_path_mode: '0755'
 # name of the package that provides xorriso
 _def_xorriso_package_name: 'xorriso'
 
+# name of the package that provides rsync
+_def_rsync_package_name: 'rsync'
+
 # relative path within the temporary_work_dir_source_files_path to the isolinux.bin file
 _def_isolinux_bin_path: 'isolinux/isolinux.bin'
 

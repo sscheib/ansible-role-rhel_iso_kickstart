@@ -5,6 +5,12 @@
     state: 'unmounted'
   become: true
 
+- name: 'extract_files | Ensure rsync is present'
+  ansible.builtin.package:
+    name: '{{ _rsync_package_name }}'
+    state: 'present'
+  become: true
+
 - name: 'extract_files | Mount downloaded ISO to extract contents'
   ansible.posix.mount:
     path: '{{ _temporary_mount_path }}'

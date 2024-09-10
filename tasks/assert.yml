@@ -51,6 +51,7 @@
     - '_dest_dir_path_group'
     - '_dest_dir_path_mode'
     - '_xorriso_package_name'
+    - '_rsync_package_name'
     - '_isolinux_bin_path'
     - '_boot_cat_path'
     - '_pxelinux_cfg_path'
